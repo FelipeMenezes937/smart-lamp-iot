@@ -9,7 +9,7 @@ Sistema IoT para acionamento e controle de cor de um LED difuso RGB através de 
 ## Funcionalidades
 
 - **Controle ON/OFF** - Liga e desliga o LED onboard do ESP32
-- **Controle de Cor RGB** - Envie códigos hexadecimais (ex: `#FF0000`) para alterar a cor do LED difuso
+- **Controle de Cor RGB** - Envie códigos hexadecimais (ex: `#FF0000`) ou nomes de cores em português (ex: `vermelho`, `azul`)
 - **Leitura de Luminosidade** - Publica valores de luminosidade em tópico MQTT separado
 - **Integração FIWARE** - Comunicacao via broker MQTT com a plataforma FIWARE
 
@@ -36,7 +36,11 @@ const int BROKER_PORT = 1883;
 | `/TEF/lamp001/attrs` | Publica status do LED |
 | `/TEF/lamp001/attrs/l` | Publica luminosidade |
 
-### Comando de Cor
+## Controle de Cor
+
+O sistema aceita comandos de cor de duas formas:
+
+### Via Hexadecimal
 Envie um código hexadecimal para alterar a cor:
 ```
 #FF0000 - Vermelho
@@ -45,6 +49,22 @@ Envie um código hexadecimal para alterar a cor:
 #FFFFFF - Branco
 #FFA500 - Laranja
 ```
+
+### Via Nome da Cor
+Envie o nome da cor em português (minúsculas ou maiúsculas):
+| Nome | Cor |
+|------|-----|
+| branco | #FFFFFF |
+| preto | #000000 |
+| vermelho | #FF0000 |
+| azul | #0000FF |
+| verde | #00FF00 |
+| amarelo | #FFFF00 |
+
+### Formato MQTT
+A mensagem pode ser enviada de duas formas:
+- Apenas o valor: `vermelho` ou `#FF0000`
+- Com pipe: `lamp001@cor|vermelho` (ignora tudo antes do pipe)
 
 ## Autores
 
