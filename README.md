@@ -87,6 +87,6 @@ Baseado no projeto original do professor Fábio Henrique Cabrini (Revisões: Luc
 
 ## Simulação Wokwi
 
-[![Wokwi](https://img.shields.io/badge/Simula%C3%A7%C3%A3o-Wokwi-FFFFFF?style=for-the-badge&logo=wokwi)](https://wokwi.com/projects/458334989531892737)
+[![Wokwi](https://img.shields.io/badge/Simula%C3%A7%C3%A3o-Wokwi-FFFFFF?style=for-the-badge&logo=wokwi)](https://wokwi.com/projects/458699894496782337)
 
-> Clique no badge acima ou [aqui](https://wokwi.com/projects/458334989531892737) para acessar a simulação do projeto.
+> Clique no badge acima ou [aqui](https://wokwi.com/projects/458699894496782337) para acessar a simulação do projeto.
