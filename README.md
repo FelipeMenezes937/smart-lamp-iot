@@ -1,6 +1,9 @@
 # wokwiSimulator
 
 Projeto de uma lâmpada inteligente controlada via MQTT, desenvolvida para ESP32 com simulação no Wokwi.
+## Arquitetura
+
+![Arquitetura do Projeto](img/arquiteture.jpeg)
 
 ## Funcionalidades
 
@@ -62,8 +65,15 @@ Ou utilize a PlatformIO IDE.
 
 ## Simulação
 
-Este projeto pode ser simulado no [Wokwi](https://wokwi.com) utilizando os arquivos `diagram.json` e `wokwi.toml`.
+Este projeto pode ser simulado no [Wokwi](https://wokwi.com/projects/458761019384626177) utilizando os arquivos `diagram.json` e `wokwi.toml`.
 
-## Arquitetura
+## Autores
 
-![Arquitetura do Projeto](img/arquiteture.jpeg)
+| Nome | Função |
+|------|--------|
+| Prof. Fábio Henrique Cabrini | Código base |
+| Gabriel Ardito | Aluno |
+| Felipe Menezes | Aluno |
+| João Sarracine | Aluno |
+| João Gonzales | Aluno |
+
