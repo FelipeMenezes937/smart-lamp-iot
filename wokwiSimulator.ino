@@ -1,13 +1,10 @@
-//Autor: Fábio Henrique Cabrini
-//Resumo: Esse programa possibilita ligar e desligar o led onboard, além de mandar o status para o Broker MQTT possibilitando o Helix saber
+//Autores: Gabriel Ardito, Felipe Menezes, João Sarracine, João Gonzales
+//Resumo: Esse programa possibilita ligar e desligar o ledRgb, além de permetir o usuário escolher entre cores predefinidas, códigos hexadecimáis e adicionar cores novase também manda o status para o Broker MQTT possibilitando o Helix saber
 //se o led está ligado ou desligado.
 //Revisões:
-//Rev1: 26-08-2023 Código portado para o ESP32 e para realizar a leitura de luminosidade e publicar o valor em um tópico aprorpiado do broker
-//Autor Rev1: Lucas Demetrius Augusto
-//Rev2: 28-08-2023 Ajustes para o funcionamento no FIWARE Descomplicado
-//Autor Rev2: Fábio Henrique Cabrini
-//Rev3: 1-11-2023 Refinamento do código e ajustes para o funcionamento no FIWARE Descomplicado
-//Autor Rev3: Fábio Henrique Cabrini
+
+
+//importando bibliotecas
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <vector>
@@ -22,7 +19,7 @@ const char* default_TOPICO_PUBLISH_1 = "/TEF/lamp002/attrs"; // Tópico MQTT de 
 const char* default_TOPICO_PUBLISH_2 = "/TEF/lamp002/attrs/l"; // Tópico MQTT de envio de informações para Broker
 const char* default_PICO_PUBLISH_3 = "/tef/lamp";
 const char* default_ID_MQTT = "fiware_001"; // ID MQTT
-const int default_D4 = 2; // Pino do LED onboard
+
 // Declaração da variável para o prefixo do tópico
 const char* topicPrefix = "lamp002";
  
@@ -35,7 +32,7 @@ char* TOPICO_SUBSCRIBE = const_cast<char*>(default_TOPICO_SUBSCRIBE);
 char* TOPICO_PUBLISH_1 = const_cast<char*>(default_TOPICO_PUBLISH_1);
 char* TOPICO_PUBLISH_2 = const_cast<char*>(default_TOPICO_PUBLISH_2);
 char* ID_MQTT = const_cast<char*>(default_ID_MQTT);
-int D4 = default_D4;
+
  
 // mudancas feitas pelo felipe
 //iniciando tratamento de portas do difusor, cada letra do rgb se comporta como um led independente, por isso 3 entradas
@@ -96,9 +93,9 @@ void reconectWiFi() {
     Serial.print(SSID);
     Serial.println("IP obtido: ");
     Serial.println(WiFi.localIP());
- 
-    // Garantir que o LED inicie desligado
-    digitalWrite(D4, LOW);
+    //Garante que o Led inicie apagado
+    setarCorPraHex("#000000");
+   
 }
  
 void mqtt_callback(char* topic, byte* payload, unsigned int length) {
@@ -108,17 +105,19 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
         char c = (char)payload[i];
         msg += c;
     }
+
+    // tratando a mensagem antes das validacoes
     msg.trim();
     msg.toLowerCase();
     Serial.print("- Mensagem recebida: ");
     Serial.println(msg);
  
-// procura o pipe
-int pos = msg.indexOf('|');
-// no caso de msg = "lamp001@cor|vermelho", corta tudo antes e deixa
-if (pos != -1) {
-msg = msg.substring(pos + 1);
-}
+    // procura o pipe
+    int pos = msg.indexOf('|');
+    // no caso de msg = "lamp001@cor|vermelho", corta tudo antes e deixa
+    if (pos != -1) {
+    msg = msg.substring(pos + 1);
+    }
      
 
 
@@ -128,69 +127,50 @@ msg = msg.substring(pos + 1);
       Serial.println(msg);
       EstadoSaida = '1';
  
+      // chama funcao setarUsandoHexa passando msg como parametro
       setarUsandoHexa(msg);
     }else if(msg[0] == 'a' && msg[1] == 'd' && msg[2] == 'd'){ // "" é string, '' é char
       adicionarNovaCor(msg);
       EstadoSaida = '1';
+      return;
 
     }else if(msg.length() > 0){
       Serial.println("cor recebida Nome:");
       Serial.println(msg);
       setarUsandoNome(msg);
-      EstadoSaida = '1';
+
     }if (msg == "#000000" || msg == "desligar") {
       EstadoSaida = '0';
     }
-    else{
-    bool encontrado = false;
-    int total = nomesCores.size();
-    for (int i = 0; i < total; i++) {
-        if (msg == nomesCores[i]) {
-            encontrado = true;
-            break;
-    }
-}
-
-if (!encontrado) {
-    EstadoSaida = '0';
-}
 
     }
-}
- 
+
+// verifica se o MQTT está conectado
 void VerificaConexoesWiFIEMQTT() {
-    if (!MQTT.connected())
+    if (!MQTT.connected()){
         reconnectMQTT();
+        }
     reconectWiFi();
 }
- 
+
+// printa o estado do Led na Serial
 void EnviaEstadoOutputMQTT() {
     if (EstadoSaida == '1') {
-        Serial.println("- Led Ligado");
+        Serial.println("- Led Ligado"); 
     }
  
     if (EstadoSaida == '0') {
         Serial.println("- Led Desligado");
     }
-    Serial.println("- Estado do LED onboard enviado ao broker!");
+    Serial.println("- Estado do LED enviado ao broker!");
     delay(1000);
 }
  
 void InitOutput() {
-    pinMode(D4, OUTPUT);
     pinMode(RED_PIN, OUTPUT);
     pinMode(GREEN_PIN, OUTPUT);
     pinMode(BLUE_PIN, OUTPUT);
-    digitalWrite(D4, HIGH);
-    boolean toggle = false;
- 
-    for (int i = 0; i <= 10; i++) {
-        toggle = !toggle;
-        digitalWrite(D4, toggle);
-        delay(200);
-    }
 }
- 
 void reconnectMQTT() {
     while (!MQTT.connected()) {
         Serial.print("* Tentando se conectar ao Broker MQTT: ");
@@ -205,11 +185,11 @@ void reconnectMQTT() {
         }
     }
 }
- 
+
 void handleLuminosity() {
     const int potPin = 34;
     int sensorValue = analogRead(potPin);
-    int luminosity = map(sensorValue, 0, 4095, 0, 100);
+    int luminosity = map(sensorValue, 0, 4095, 0, 100);// mapeando o valor da luminosidade, para 0 a 100
     String mensagem = String(luminosity);
     Serial.print("Valor da luminosidade: ");
     Serial.println(mensagem.c_str());
@@ -228,8 +208,8 @@ void setarCorPraHex(String hexColor){
   // esp normalmente tem 32 bits
   // exemplo: 0xFFFFFF = 16777215
   //strtol -> String To Long ou seja, texto pra numero
-  //hexColor.c_str() --> conversão de tipo, temos String hexColor, mas o strtol() não aceita String, ele aceita chars (bizarro, mas descobri que string no C não é um array de Chars)
-  // resumidamente, transformamos String "#FF0000" em "#FF0000" (formato C)
+  //hexColor.c_str() --> conversão de tipo, temos String hexColor, mas o strtol() não aceita String, ele aceita chars 
+  // resumidamente, transformamos String "#FF0000" em FF0000 (formato C)
   // NULL indica onde a conversão deve parar, sem isso oq não é numero ficaria como "endptr", não queremos isso.
   // com o 16 estamos ditando a base numérica que queremos, Hex de 16, tamo quase lá
   //vai ficar mais ou menos assim:
@@ -273,9 +253,8 @@ void setarUsandoNome(String msg) {
             return; // Encontrou? Sai da função.
         }
         
-    } Serial.println("Cor nao encontrada na lista.");
-
-    
+    }Serial.println("Cor nao encontrada na lista.");
+    EstadoSaida = '0';
 }
 
 void setarUsandoHexa(String msg){
@@ -301,7 +280,11 @@ void adicionarNovaCor(String msg) {
     Serial.print("Nova cor cadastrada: ");
     Serial.println(nomeCor);
 
-    setarUsandoNome(nomeCor); 
+    EstadoSaida = '1';
+    Serial.println(EstadoSaida);
+    setarUsandoNome(nomeCor);
+
+
   } else {
     Serial.println("Erro no formato! Use: add|nome|#hexa");
   }
