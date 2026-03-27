@@ -55,12 +55,6 @@ Projeto de uma lâmpada inteligente controlada via MQTT, desenvolvida para ESP32
 - `vermelho`, `azul`, `verde`, `amarelo` - Define cor pelo nome
 - `add|roxo|#800080` - Adiciona nova cor dinamicamente
 
-## Compilação
-
-```bash
-./compilar.sh
-```
-
 Ou utilize a PlatformIO IDE.
 
 ## Simulação
