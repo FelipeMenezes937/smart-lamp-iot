@@ -59,7 +59,7 @@ Ou utilize a PlatformIO IDE.
 
 ## Simulação
 
-Este projeto pode ser simulado no [Wokwi](https://wokwi.com/projects/458761019384626177) utilizando os arquivos `diagram.json` e `wokwi.toml`.
+Este projeto pode ser simulado no [Wokwi](https://wokwi.com/projects/458761019384626177)
 
 ## Autores
 
